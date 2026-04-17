@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <title>Chiflas New | Moda Urbana</title>
     <!-- FAVICON: reemplaza el href con la URL de tu imagen -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/zTCmv22z/Icono-1.png">
+    <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=64&h=64&fit=crop&q=80">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root{--red:#E8192C;--g:#0f0f0f;--g2:#181818;--g3:#222;--g4:#2c2c2c;--mu:#555;--card:#131313;--gold:#f5c518}
@@ -36,13 +36,6 @@
         .hbtn:active{transform:scale(.9)}
         .hbtn svg{width:18px;height:18px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
         .cbadge{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid #161616}
-
-        /* SYNC INDICATOR */
-        .sync-dot{width:7px;height:7px;border-radius:50%;background:#333;transition:.3s;flex-shrink:0}
-        .sync-dot.syncing{background:#f5c518;animation:pulse .8s infinite}
-        .sync-dot.synced{background:#1BA755}
-        .sync-dot.error{background:var(--red)}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
         /* BANNER */
         .banner{position:relative;overflow:hidden;height:140px;background:#0a0000;flex-shrink:0}
@@ -283,7 +276,6 @@
             <span class="logo-sub">Moda Urbana</span>
         </div>
         <div class="hdr-r">
-            <div class="sync-dot" id="syncDot" title="Estado de sincronización"></div>
             <div class="hbtn" onclick="openSearch()">
                 <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
             </div>
@@ -399,10 +391,8 @@
             <div class="adm-content">
 
                 <div id="atab-stats">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:#555">
-                        <div class="sync-dot" id="adminSyncDot"></div>
-                        <span id="adminSyncMsg">Conectado a la nube</span>
-                        <button onclick="forceSyncAll()" style="margin-left:auto;padding:4px 10px;background:#161616;border:1px solid #333;border-radius:6px;color:#888;font-size:10px;cursor:pointer">Sincronizar</button>
+                    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+                        <button onclick="forceSyncAll()" style="padding:6px 14px;background:#161616;border:1px solid #333;border-radius:6px;color:#888;font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif">↻ Sincronizar</button>
                     </div>
                     <div class="stat-grid">
                         <div class="scard"><div class="sl">Pedidos</div><div class="sv" id="st-orders">0</div></div>
@@ -642,17 +632,13 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+// sync dot now silent — kept only for internal state, no visible element
 function setSyncDot(state) {
-    // state: 'syncing' | 'synced' | 'error'
-    ['syncDot','adminSyncDot'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.className = 'sync-dot ' + state; }
-    });
     const msg = document.getElementById('adminSyncMsg');
     if (msg) {
         msg.textContent = state === 'syncing' ? 'Sincronizando...'
-                        : state === 'synced'  ? 'Todo guardado en la nube'
-                        : 'Error de conexión — datos locales activos';
+                        : state === 'synced'  ? 'Todo guardado'
+                        : 'Sin conexión — datos locales activos';
     }
 }
 
@@ -666,7 +652,7 @@ function setLoadProgress(pct, msg) {
 // ═══════════════════════════════════════════════
 async function loadFromCloud() {
     try {
-        setLoadProgress(20, 'Conectando a la nube...');
+        setLoadProgress(20, 'Cargando catálogo...');
         const res = await fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': BIN_KEY } });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
@@ -683,12 +669,11 @@ async function loadFromCloud() {
             return p;
         });
 
-        setLoadProgress(80, 'Catálogo listo...');
+        setLoadProgress(80, 'Preparando tu experiencia...');
         setSyncDot('synced');
         return true;
     } catch (e) {
         console.warn('Cloud load failed, using localStorage:', e);
-        // Fallback a localStorage
         const lp = localStorage.getItem('cn_prods');
         const lc = localStorage.getItem('cn_coupons');
         const lo = localStorage.getItem('cn_orders');
@@ -995,12 +980,14 @@ function changeQty(d) { curQty = Math.max(1, curQty + d); document.getElementByI
 // ═══════════════════════════════════════════════
 function addToCart() {
     if (!curProd) return;
-    if (curProd.sizes && curProd.sizes.length && !curSize) { showToast('Selecciona una talla antes de añadir'); return; }
-    const d = getDisp(curProd);
-    const principalImg = (curProd.imgs && curProd.imgs.length > 0) ? curProd.imgs[0] : (curProd.img || '');
-    const ex = cart.find(x => x.id === curProd.id && x.size === curSize);
+    // Re-fetch fresh copy in case products array was reloaded from cloud
+    const p = products.find(x => x.id === curProd.id) || curProd;
+    if (p.sizes && p.sizes.length && !curSize) { showToast('Selecciona una talla antes de añadir'); return; }
+    const d = getDisp(p);
+    const principalImg = (p.imgs && p.imgs.length > 0) ? p.imgs[0] : (p.img || '');
+    const ex = cart.find(x => x.id === p.id && x.size === curSize);
     if (ex) ex.qty += curQty;
-    else cart.push({ id: curProd.id, name: curProd.name, img: principalImg, price: d, size: curSize, qty: curQty });
+    else cart.push({ id: p.id, name: p.name, img: principalImg, price: d, size: curSize, qty: curQty });
     saveCart(); updateBadge(); closeProdModal(); showToast('Añadido a la bolsa ✓');
 }
 
@@ -1354,15 +1341,15 @@ function delCoupon(i) { coupons.splice(i, 1); save(); renderCoupons(); renderSta
 // ═══════════════════════════════════════════════
 (async function init() {
     setSyncDot('syncing');
-    setLoadProgress(10, 'Iniciando Chiflas New...');
+    setLoadProgress(10, 'Cargando catálogo...');
 
     await loadFromCloud();
 
-    setLoadProgress(95, 'Preparando catálogo...');
+    setLoadProgress(95, 'Listo...');
     applyFilters();
     updateBadge();
 
-    setLoadProgress(100, 'Listo');
+    setLoadProgress(100, '');
     setTimeout(() => {
         const ls = document.getElementById('loadScreen');
         ls.classList.add('hide');
