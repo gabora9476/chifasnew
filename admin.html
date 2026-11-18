@@ -105,7 +105,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
 <div id="app" style="display:none">
 <header><div class="hin"><svg class="lg" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>
 <b>MEN´S<small>ADMINISTRACIÓN</small></b><span style="font-size:11px;color:#777"><i class="live" id="live"></i>En vivo</span><button class="btn g sm" onclick="logout()">Salir</button></div>
-<div class="tabs"><div class="tab on" data-t="stats">Resumen</div><div class="tab" data-t="orders">Pedidos<i id="nb">0</i></div><div class="tab" data-t="products">Productos</div><div class="tab" data-t="inv">Inventario</div><div class="tab" data-t="coupons">Cupones</div></div></header>
+<div class="tabs"><div class="tab on" data-t="stats">Resumen</div><div class="tab" data-t="orders">Pedidos<i id="nb">0</i></div><div class="tab" data-t="products">Productos</div><div class="tab" data-t="inv">Inventario</div><div class="tab" data-t="banners">Banner</div><div class="tab" data-t="coupons">Cupones</div></div></header>
 
 <div class="wrap">
 <div class="sec on" id="s-stats"><div class="stats" id="stats"></div></div>
@@ -117,18 +117,19 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
     <input id="p-name" placeholder="Nombre del producto" maxlength="120">
     <input id="p-brand" placeholder="Marca / Colección" maxlength="80">
     <div class="r2"><div><label class="lb">Precio $</label><input id="p-price" type="number" step="0.01" min="0"></div><div><label class="lb">Precio anterior $</label><input id="p-old" type="number" step="0.01" min="0"></div></div>
-    <select id="p-cat"><option value="ropa">Ropa</option><option value="perfume">Perfume</option><option value="accesorio">Accesorio</option><option value="calzado">Calzado</option><option value="bolso">Bolso</option><option value="joyeria">Joyería</option></select>
+    <input id="p-cat" list="catlist" placeholder="Categoría (ej: ropa, relojes, gorras)" maxlength="30"><datalist id="catlist"></datalist>
     <label class="lb">Imágenes (se optimizan a WebP y se les agrega el logo automáticamente)</label>
     <div class="drop">Toca para subir imágenes<input type="file" id="files" accept="image/*" multiple onchange="upload(this)"></div>
     <div class="prev" id="prev"></div><div id="uprog" style="font-size:12px;color:#888;margin-bottom:8px"></div>
     <div class="r2"><input id="p-badge" placeholder="Etiqueta: NEW / HOT / -30%"><select id="p-bt"><option value="sale">Oferta (rojo)</option><option value="new">Nuevo (verde)</option><option value="hot">Hot (naranja)</option></select></div>
+    <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="p-feat" style="width:20px;height:20px;margin:0;accent-color:#E8192C"> ★ Mostrar en el slide de Destacados de la tienda</label>
     <input id="p-sizes" placeholder="Tallas: XS,S,M,L (separadas por coma)">
     <textarea id="p-desc" placeholder="Descripción del producto..."></textarea>
     <div class="r3"><div><label class="lb">Stock</label><input id="p-stock" type="number" min="0" value="0"></div><div><label class="lb">Descuento %</label><input id="p-disc" type="number" min="0" max="100" value="0"></div><div><label class="lb">Cuotas</label><input id="p-inst" type="number" min="0" value="0"></div></div>
     <label class="lb">Valor de cada cuota $</label><input id="p-ip" type="number" step="0.01" min="0" value="0">
     <div style="display:flex;gap:10px"><button class="btn full" id="sbtn" onclick="saveProd()">GUARDAR PRODUCTO</button><button class="btn g" onclick="clearForm()">Limpiar</button></div>
   </div>
-  <div class="bar"><input id="ps" placeholder="Buscar producto..."></div>
+  <div class="bar"><input id="ps" placeholder="Buscar producto..."><button class="btn g" id="pfb" style="white-space:nowrap" onclick="togFeat()">★ Destacados</button></div>
   <div class="list" id="plist"></div>
   <button class="more" id="pmore" style="display:none" onclick="loadProducts()">Cargar más</button>
 </div>
@@ -138,6 +139,20 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
 <div class="sec" id="s-coupons">
   <div class="box"><h4>Nuevo Cupón</h4><div class="r3"><input id="c-code" placeholder="CÓDIGO" style="text-transform:uppercase"><input id="c-val" type="number" min="1" max="100" placeholder="% desc."><input id="c-uses" type="number" min="1" placeholder="Usos"></div><button class="btn full" onclick="addCoupon()">CREAR CUPÓN</button></div>
   <div class="list" id="clist"></div>
+</div>
+
+<div class="sec" id="s-banners">
+  <div class="box"><h4 id="btitle">Nuevo Slide del Banner</h4>
+    <input id="bn-tag" placeholder="Etiqueta roja (ej: Nuevo 2026, -40% OFF, Hot)" maxlength="30">
+    <input id="bn-title" placeholder="Título (ej: COLECCIÓN URBANA)" maxlength="50">
+    <input id="bn-sub" placeholder="Subtítulo (ej: Streetwear & Moda Premium)" maxlength="80">
+    <label class="lb">Foto (vertical 4:5 se ve mejor · se optimiza a WebP)</label>
+    <div class="drop">Toca para subir la foto del slide<input type="file" accept="image/*" onchange="bnImg(this)"></div>
+    <div class="prev" id="bprev"></div><div id="bprog" style="font-size:12px;color:#888;margin-bottom:8px"></div>
+    <label style="display:flex;align-items:center;gap:10px;font-size:13px;color:#ccc;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="bn-act" checked style="width:20px;height:20px;margin:0;accent-color:#E8192C"> Visible en la tienda</label>
+    <div style="display:flex;gap:10px"><button class="btn full" id="bsave" onclick="saveBn()">GUARDAR SLIDE</button><button class="btn g" onclick="clearBn()">Limpiar</button></div>
+  </div>
+  <div class="list" id="blist"></div>
 </div>
 </div>
 </div>
@@ -160,7 +175,7 @@ const bad=e=>{e.onerror=null;e.src=e.dataset.f};
 const imgT=u=>u?`<img src="${esc(thumb(u))}" data-f="${esc(u)}" onerror="bad(this)" loading="lazy" decoding="async" alt="">`:'<img alt="">';
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
 
-let sb,prods=[],pPage=0,pDone=false,pq='',orders=[],oPage=0,oDone=false,imgs=[],trash=[],formId=null,mOrder=null,logoImg=new Image(),pend=0;
+let sb,prods=[],pPage=0,pDone=false,pq='',pfeat=false,orders=[],oPage=0,oDone=false,imgs=[],trash=[],formId=null,mOrder=null,logoImg=new Image(),pend=0;
 logoImg.src='data:image/svg+xml,'+encodeURIComponent(LOGO);
 
 // ═══ AUTH ═══
@@ -179,7 +194,7 @@ function session(s){
 
 // ═══ ARRANQUE ═══
 function boot(){
-  stats();loadProducts(true);loadOrders(true);loadCoupons();
+  stats();loadProducts(true);loadOrders(true);loadCoupons();loadBanners();
   sb.channel('admin-live')
    .on('postgres_changes',{event:'*',schema:'public',table:'orders'},({eventType:t,new:n})=>{
       if(t==='INSERT'){orders.unshift(n);pend++;beep();toast('🛍️ Nuevo pedido '+n.id);renderOrders(n.id)}
@@ -187,9 +202,10 @@ function boot(){
       stats()})
    .on('postgres_changes',{event:'*',schema:'public',table:'products'},({eventType:t,new:n,old:o})=>{
       if(t==='DELETE')prods=prods.filter(p=>p.id!==o.id);
-      else{const i=prods.findIndex(p=>p.id===n.id);i>=0?prods[i]=n:t==='INSERT'&&!pq&&prods.unshift(n)}
+      else{const i=prods.findIndex(p=>p.id===n.id);if(i>=0){pfeat&&!n.featured?prods.splice(i,1):prods[i]=n}else if(t==='INSERT'&&!pq&&!pfeat)prods.unshift(n)}
       renderProds();stats()})
    .on('postgres_changes',{event:'*',schema:'public',table:'coupons'},()=>loadCoupons())
+   .on('postgres_changes',{event:'*',schema:'public',table:'banners'},()=>loadBanners())
    .subscribe(s=>$('live').classList.toggle('on',s==='SUBSCRIBED'));
 }
 function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.frequency.value=880;o.connect(a.destination);o.start();o.stop(a.currentTime+.18)}catch(e){}}
@@ -242,12 +258,16 @@ async function loadProducts(reset){
   if(reset){prods=[];pPage=0;pDone=false}
   let r=sb.from('products').select('*').order('created_at',{ascending:false}).range(pPage*PS,pPage*PS+PS-1);
   if(pq)r=r.or(`name.ilike.%${pq}%,brand.ilike.%${pq}%`);
+  if(pfeat)r=r.eq('featured',true);
   const {data,error}=await r;if(error)return toast('Error cargando productos');
   prods.push(...data);if(data.length<PS)pDone=true;pPage++;renderProds();
 }
+function togFeat(){pfeat=!pfeat;$('pfb').classList.toggle('ok',pfeat);loadProducts(true)}
+async function setFeat(id,v){const {error}=await sb.from('products').update({featured:v}).eq('id',id);toast(error?'Error: '+error.message:v?'Añadido a Destacados ✓':'Quitado de Destacados')}
 function renderProds(){
-  $('plist').innerHTML=prods.length?prods.map(p=>`<div class="row">${imgT(p.imgs?.[0])}<div class="i"><div class="n">${esc(p.name)}</div><div class="s">${esc(p.cat)} · ${money(p.price)}${p.discount?` (-${p.discount}%)`:''} · Stock ${p.stock}</div>
-  <div class="acts"><button class="btn g sm" onclick="editProd('${p.id}')">Editar</button><button class="btn g sm" onclick="delProd('${p.id}')">Eliminar</button></div></div></div>`).join(''):'<div class="empty">Sin productos</div>';
+  $('catlist').innerHTML=[...new Set(['ropa','perfume','accesorio','calzado','bolso','joyeria','relojes',...prods.map(p=>p.cat)])].map(c=>`<option value="${esc(c)}">`).join('');
+  $('plist').innerHTML=prods.length?prods.map(p=>`<div class="row">${imgT(p.imgs?.[0])}<div class="i"><div class="n">${p.featured?'★ ':''}${esc(p.name)}</div><div class="s">${esc(p.cat)} · ${money(p.price)}${p.discount?` (-${p.discount}%)`:''} · Stock ${p.stock}</div>
+  <div class="acts"><button class="btn g sm" onclick="setFeat('${p.id}',${!p.featured})">${p.featured?'★ Quitar':'☆ Destacar'}</button><button class="btn g sm" onclick="editProd('${p.id}')">Editar</button><button class="btn g sm" onclick="delProd('${p.id}')">Eliminar</button></div></div></div>`).join(''):'<div class="empty">Sin productos</div>';
   $('ilist').innerHTML=prods.length?prods.map(p=>`<div class="row">${imgT(p.imgs?.[0])}<div class="i"><div class="n">${esc(p.name)}</div>
   <div class="s ${p.stock<=0?'out':p.stock<=3?'low':''}">${p.stock<=0?'AGOTADO':p.stock<=3?'Stock bajo':'En stock'}</div>
   <div class="stock"><button onclick="adj('${p.id}',-1)">−</button><input type="number" min="0" value="${p.stock}" onchange="setStock('${p.id}',this.value)"><button onclick="adj('${p.id}',1)">+</button></div></div></div>`).join(''):'<div class="empty">Sin productos</div>';
@@ -291,8 +311,9 @@ const filesOf=us=>us.flatMap(u=>{const p=pathOf(u);return p?[p,p.replace(/\.webp
 async function saveProd(){
   const v=id=>$(id).value.trim(),name=v('p-name');
   if(!name)return toast('Ingresa el nombre');
+  if(!v('p-cat'))return toast('Escribe o elige una categoría');
   if(!imgs.length)return toast('Sube al menos una imagen');
-  const row={id:formId||crypto.randomUUID(),name,brand:v('p-brand'),price:parseFloat(v('p-price'))||0,old_price:parseFloat(v('p-old'))||0,cat:v('p-cat'),imgs,badge:v('p-badge'),badge_type:v('p-bt'),
+  const row={id:formId||crypto.randomUUID(),name,brand:v('p-brand'),price:parseFloat(v('p-price'))||0,old_price:parseFloat(v('p-old'))||0,cat:v('p-cat').toLowerCase(),featured:$('p-feat').checked,imgs,badge:v('p-badge'),badge_type:v('p-bt'),
     sizes:v('p-sizes').split(',').map(s=>s.trim()).filter(Boolean),descr:v('p-desc'),stock:Math.max(0,parseInt(v('p-stock'))||0),discount:Math.min(100,Math.max(0,parseInt(v('p-disc'))||0)),installments:parseInt(v('p-inst'))||0,inst_price:parseFloat(v('p-ip'))||0};
   $('sbtn').disabled=true;
   const {error}=await sb.from('products').upsert(row);$('sbtn').disabled=false;
@@ -303,12 +324,12 @@ async function saveProd(){
 function editProd(id){
   const p=prods.find(x=>x.id===id);formId=p.id;imgs=[...(p.imgs||[])];trash=[];
   const s=(i,v)=>$(i).value=v??'';
-  s('p-name',p.name);s('p-brand',p.brand);s('p-price',p.price);s('p-old',p.old_price);s('p-cat',p.cat);s('p-badge',p.badge);s('p-bt',p.badge_type||'sale');
+  s('p-name',p.name);s('p-brand',p.brand);s('p-price',p.price);s('p-old',p.old_price);s('p-cat',p.cat);$('p-feat').checked=!!p.featured;s('p-badge',p.badge);s('p-bt',p.badge_type||'sale');
   s('p-sizes',(p.sizes||[]).join(','));s('p-desc',p.descr);s('p-stock',p.stock);s('p-disc',p.discount);s('p-inst',p.installments);s('p-ip',p.inst_price);
   renderPrev();$('ftitle').textContent='Editar Producto';scrollTo({top:0,behavior:'smooth'});
 }
 function clearForm(){formId=null;imgs=[];trash=[];['p-name','p-brand','p-price','p-old','p-badge','p-sizes','p-desc'].forEach(i=>$(i).value='');
-  ['p-stock','p-disc','p-inst','p-ip'].forEach(i=>$(i).value=0);$('p-bt').value='sale';$('p-cat').value='ropa';$('ftitle').textContent='Agregar Producto';$('uprog').textContent='';renderPrev()}
+  ['p-stock','p-disc','p-inst','p-ip'].forEach(i=>$(i).value=0);$('p-bt').value='sale';$('p-cat').value='';$('p-feat').checked=false;$('ftitle').textContent='Agregar Producto';$('uprog').textContent='';renderPrev()}
 async function delProd(id){
   const p=prods.find(x=>x.id===id);if(!confirm(`¿Eliminar "${p.name}"?`))return;
   const {error}=await sb.from('products').delete().eq('id',id);
@@ -328,6 +349,49 @@ async function addCoupon(){
   if(!error)['c-code','c-val','c-uses'].forEach(i=>$(i).value='');toast(error?'Error: '+error.message:'Cupón creado ✓');
 }
 async function delCoupon(c){if(confirm('¿Eliminar cupón '+c+'?'))await sb.from('coupons').delete().eq('code',c)}
+
+// ═══ BANNER ═══
+let bns=[],bnId=null,bnUrl='',bnTrash=[];
+const bimg=u=>u?`<img src="${esc(u)}" loading="lazy" decoding="async" alt="">`:'<img alt="">';
+async function loadBanners(){
+  const {data,error}=await sb.from('banners').select('*').order('pos').order('created_at');
+  if(error)return toast('Falta crear la tabla banners (ver SQL)');
+  bns=data||[];
+  $('blist').innerHTML=bns.length?bns.map((b,i)=>`<div class="row">${bimg(b.img)}<div class="i"><div class="n">${esc(b.tag?b.tag+' · ':'')}${esc(b.title)}</div><div class="s">Posición ${i+1} · ${b.active?'Visible':'Oculto'}</div>
+  <div class="acts"><button class="btn g sm" ${i?'':'disabled'} onclick="moveBn(${i},-1)">▲</button><button class="btn g sm" ${i<bns.length-1?'':'disabled'} onclick="moveBn(${i},1)">▼</button>
+  <button class="btn g sm" onclick="editBn('${b.id}')">Editar</button><button class="btn g sm" onclick="togBn('${b.id}',${!b.active})">${b.active?'Ocultar':'Mostrar'}</button><button class="btn g sm" onclick="delBn('${b.id}')">Eliminar</button></div></div></div>`).join(''):'<div class="empty">Sin slides. La tienda mostrará un banner básico con el nombre.</div>';
+}
+async function bnImg(inp){
+  const f=inp.files[0];if(!f)return;if(!bnId)bnId=crypto.randomUUID();
+  $('bprog').textContent='Optimizando y subiendo...';
+  try{
+    const bmp=await createImageBitmap(f),r=Math.min(1,1000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');
+    c.width=Math.round(bmp.width*r);c.height=Math.round(bmp.height*r);const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,c.width,c.height);
+    const blob=await new Promise(rs=>c.toBlob(rs,'image/webp',.8)),path=`banners/${bnId}_${Date.now()}.webp`;
+    const {error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:'image/webp',cacheControl:'31536000'});if(error)throw error;
+    if(bnUrl)bnTrash.push(bnUrl);bnUrl=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    $('bprev').innerHTML=`<div>${bimg(bnUrl)}</div>`;$('bprog').textContent='✓ Foto lista';
+  }catch(e){toast('Error: '+(e.message||'subida'));$('bprog').textContent=''}
+  inp.value='';
+}
+async function saveBn(){
+  const v=i=>$(i).value.trim();if(!v('bn-title'))return toast('Escribe un título');
+  const old=bns.find(b=>b.id===bnId);
+  const row={id:bnId||crypto.randomUUID(),tag:v('bn-tag'),title:v('bn-title'),subtitle:v('bn-sub'),img:bnUrl,active:$('bn-act').checked,pos:old?old.pos:bns.length};
+  $('bsave').disabled=true;const {error}=await sb.from('banners').upsert(row);$('bsave').disabled=false;
+  if(error)return toast('Error: '+error.message);
+  if(bnTrash.length)sb.storage.from(BUCKET).remove(bnTrash.map(pathOf).filter(Boolean));
+  toast('Slide guardado ✓ (ya visible en la tienda)');clearBn();
+}
+function editBn(id){const b=bns.find(x=>x.id===id);bnId=b.id;bnUrl=b.img||'';bnTrash=[];
+  $('bn-tag').value=b.tag||'';$('bn-title').value=b.title;$('bn-sub').value=b.subtitle||'';$('bn-act').checked=b.active;
+  $('bprev').innerHTML=bnUrl?`<div>${bimg(bnUrl)}</div>`:'';$('btitle').textContent='Editar Slide';scrollTo({top:0,behavior:'smooth'})}
+function clearBn(){bnId=null;bnUrl='';bnTrash=[];['bn-tag','bn-title','bn-sub'].forEach(i=>$(i).value='');$('bn-act').checked=true;$('bprev').innerHTML='';$('bprog').textContent='';$('btitle').textContent='Nuevo Slide del Banner'}
+async function moveBn(i,d){const l=[...bns];[l[i],l[i+d]]=[l[i+d],l[i]];await Promise.all(l.map((b,k)=>sb.from('banners').update({pos:k}).eq('id',b.id)))}
+async function togBn(id,v){await sb.from('banners').update({active:v}).eq('id',id)}
+async function delBn(id){const b=bns.find(x=>x.id===id);if(!confirm('¿Eliminar este slide?'))return;
+  const {error}=await sb.from('banners').delete().eq('id',id);if(error)return toast('Error: '+error.message);
+  if(b.img){const p=pathOf(b.img);p&&sb.storage.from(BUCKET).remove([p])}toast('Slide eliminado')}
 
 document.addEventListener('DOMContentLoaded',()=>{
   sb=supabase.createClient(SB_URL,SB_KEY);
