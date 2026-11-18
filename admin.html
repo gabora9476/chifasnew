@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060606">
+<meta name="robots" content="noindex,nofollow">
+<title>MEN´S · Administración</title>
+<link rel="icon" id="fav">
+<script>document.getElementById('fav').href='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#0b0b0b"/><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>')</script>
+<link rel="preconnect" href="https://pnjdvorshdvzopwklkys.supabase.co" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<style>
+:root{--red:#E8192C;--gold:#f5c518;color-scheme:dark}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',system-ui,sans-serif;background:#060606;color:#fff;min-height:100vh}
+button,input,select,textarea{font-family:inherit}
+input,select,textarea{width:100%;background:#161616;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#fff;font-size:16px;outline:none;margin-bottom:10px}
+input:focus,select:focus,textarea:focus{border-color:var(--red)}
+textarea{min-height:80px;resize:vertical}
+svg.lg{width:44px;height:44px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 14px 40px}
+#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;max-width:340px;margin:0 auto;text-align:center}
+#login svg{width:80px;height:80px}
+#login h2{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:4px;font-weight:400}
+#login p{font-size:12px;color:#666;margin-bottom:14px}
+.btn{padding:12px 18px;border:none;border-radius:10px;background:var(--red);color:#fff;font-weight:600;font-size:13px;cursor:pointer;letter-spacing:.5px}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.5}
+.btn.g{background:#1e1e1e;border:1px solid #333;color:#ccc}
+.btn.ok{background:#1a8a42}.btn.sm{padding:7px 12px;font-size:12px}
+.full{width:100%}
+header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom:1px solid #1c1c1c;backdrop-filter:blur(16px)}
+.hin{max-width:1000px;margin:0 auto;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;gap:10px}
+.hin b{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;font-weight:400;flex:1;line-height:1}
+.hin small{display:block;font-size:8px;color:var(--red);letter-spacing:3px;font-family:'Outfit'}
+.tabs{max-width:1000px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;padding:0 14px}
+.tab{padding:11px 16px;font-size:13px;color:#777;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;position:relative}
+.tab.on{color:#fff;border-color:var(--red);font-weight:600}
+.tab i{position:absolute;top:6px;right:2px;background:var(--red);font-style:normal;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px}
+.sec{display:none;padding-top:16px}.sec.on{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.sc{background:#131313;border:1px solid #1c1c1c;border-radius:14px;padding:16px}
+.sc .l{font-size:10px;color:#666;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+.sc .v{font-size:28px;font-weight:700;margin-top:6px}
+.sc.w .v{color:#FF8C00}
+.box{background:#131313;border:1px solid #1c1c1c;border-radius:14px;padding:16px;margin-bottom:14px}
+.box h4{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;margin-bottom:12px;font-weight:400}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.lb{font-size:10px;color:#777;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin:2px 0 6px;display:block}
+.drop{border:2px dashed #2a2a2a;border-radius:12px;padding:18px;text-align:center;color:#666;font-size:12px;cursor:pointer;margin-bottom:10px;position:relative}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;height:100%}
+.prev{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.prev div{position:relative;width:72px;height:90px}
+.prev img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a}
+.prev button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:11px;cursor:pointer}
+.prev em{position:absolute;bottom:3px;left:3px;font-size:8px;background:#000a;padding:1px 5px;border-radius:4px;font-style:normal}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.row{background:#131313;border:1px solid #1c1c1c;border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center}
+.row img{width:56px;height:70px;object-fit:cover;border-radius:8px;background:#0a0a0a;flex-shrink:0}
+.row .i{flex:1;min-width:0}
+.row .n{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .s{font-size:11px;color:#777;margin-top:3px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.stock{display:flex;align-items:center;gap:6px;margin-top:8px}
+.stock button{width:30px;height:30px;border-radius:8px;background:#222;border:1px solid #333;color:#fff;font-size:16px;cursor:pointer}
+.stock input{width:64px;margin:0;padding:6px;text-align:center;font-size:15px}
+.low{color:#FF8C00;font-weight:600}.out{color:var(--red);font-weight:700}
+.ord{background:#131313;border:1px solid #1c1c1c;border-radius:14px;padding:14px;margin-bottom:10px}
+.ord.new{animation:fl 2s}
+@keyframes fl{0%{border-color:var(--red);box-shadow:0 0 18px #E8192C66}}
+.oh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.oid{font-weight:700;font-size:13px}
+.chip{font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.chip.pending{background:#FF8C0026;color:#FF8C00}.chip.confirmed{background:#1a8a4226;color:#1BA755}.chip.cancelled{background:#E8192C26;color:var(--red)}
+.ob{font-size:12px;color:#999;line-height:1.7;margin:8px 0}
+.ob b{color:#ddd;font-weight:500}
+.ot{font-size:17px;font-weight:700;color:var(--red)}
+.more{display:block;margin:14px auto;background:#161616;border:1px solid #2a2a2a;border-radius:10px;color:#aaa;padding:10px 26px;cursor:pointer;font-size:13px}
+.bar{display:flex;gap:10px;margin-bottom:12px}.bar input{margin:0}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.mbox{background:#111;border:1px solid #222;border-radius:18px;padding:20px;width:100%;max-width:380px}
+.mbox h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;margin-bottom:6px;font-weight:400}
+.mbox p{font-size:12px;color:#777;margin-bottom:12px}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translate(-50%,-90px);background:#1c1c1c;border:1px solid #333;padding:11px 20px;border-radius:12px;font-size:13px;z-index:9999;transition:.35s;max-width:90vw;text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.empty{text-align:center;color:#555;padding:36px;font-size:13px}
+.live{width:8px;height:8px;border-radius:50%;background:#555;display:inline-block;margin-right:6px}.live.on{background:#1BA755;box-shadow:0 0 8px #1BA755}
+@media(max-width:520px){.r3{grid-template-columns:1fr 1fr}.list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div id="login">
+  <svg viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>
+  <h2>MEN´S ADMIN</h2><p>Panel privado · Solo personal autorizado</p>
+  <input id="em" type="email" placeholder="Correo" autocomplete="username">
+  <input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+  <button class="btn full" id="lbtn" onclick="login()">INGRESAR</button>
+</div>
+
+<div id="app" style="display:none">
+<header><div class="hin"><svg class="lg" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>
+<b>MEN´S<small>ADMINISTRACIÓN</small></b><span style="font-size:11px;color:#777"><i class="live" id="live"></i>En vivo</span><button class="btn g sm" onclick="logout()">Salir</button></div>
+<div class="tabs"><div class="tab on" data-t="stats">Resumen</div><div class="tab" data-t="orders">Pedidos<i id="nb">0</i></div><div class="tab" data-t="products">Productos</div><div class="tab" data-t="inv">Inventario</div><div class="tab" data-t="coupons">Cupones</div></div></header>
+
+<div class="wrap">
+<div class="sec on" id="s-stats"><div class="stats" id="stats"></div></div>
+
+<div class="sec" id="s-orders"><div id="olist"></div><button class="more" id="omore" style="display:none" onclick="loadOrders()">Cargar más</button></div>
+
+<div class="sec" id="s-products">
+  <div class="box"><h4 id="ftitle">Agregar Producto</h4>
+    <input id="p-name" placeholder="Nombre del producto" maxlength="120">
+    <input id="p-brand" placeholder="Marca / Colección" maxlength="80">
+    <div class="r2"><div><label class="lb">Precio $</label><input id="p-price" type="number" step="0.01" min="0"></div><div><label class="lb">Precio anterior $</label><input id="p-old" type="number" step="0.01" min="0"></div></div>
+    <select id="p-cat"><option value="ropa">Ropa</option><option value="perfume">Perfume</option><option value="accesorio">Accesorio</option><option value="calzado">Calzado</option><option value="bolso">Bolso</option><option value="joyeria">Joyería</option></select>
+    <label class="lb">Imágenes (se optimizan a WebP y se les agrega el logo automáticamente)</label>
+    <div class="drop">Toca para subir imágenes<input type="file" id="files" accept="image/*" multiple onchange="upload(this)"></div>
+    <div class="prev" id="prev"></div><div id="uprog" style="font-size:12px;color:#888;margin-bottom:8px"></div>
+    <div class="r2"><input id="p-badge" placeholder="Etiqueta: NEW / HOT / -30%"><select id="p-bt"><option value="sale">Oferta (rojo)</option><option value="new">Nuevo (verde)</option><option value="hot">Hot (naranja)</option></select></div>
+    <input id="p-sizes" placeholder="Tallas: XS,S,M,L (separadas por coma)">
+    <textarea id="p-desc" placeholder="Descripción del producto..."></textarea>
+    <div class="r3"><div><label class="lb">Stock</label><input id="p-stock" type="number" min="0" value="0"></div><div><label class="lb">Descuento %</label><input id="p-disc" type="number" min="0" max="100" value="0"></div><div><label class="lb">Cuotas</label><input id="p-inst" type="number" min="0" value="0"></div></div>
+    <label class="lb">Valor de cada cuota $</label><input id="p-ip" type="number" step="0.01" min="0" value="0">
+    <div style="display:flex;gap:10px"><button class="btn full" id="sbtn" onclick="saveProd()">GUARDAR PRODUCTO</button><button class="btn g" onclick="clearForm()">Limpiar</button></div>
+  </div>
+  <div class="bar"><input id="ps" placeholder="Buscar producto..."></div>
+  <div class="list" id="plist"></div>
+  <button class="more" id="pmore" style="display:none" onclick="loadProducts()">Cargar más</button>
+</div>
+
+<div class="sec" id="s-inv"><div class="bar"><input id="is" placeholder="Buscar en inventario..."></div><div class="list" id="ilist"></div><button class="more" id="imore" style="display:none" onclick="loadProducts()">Cargar más</button></div>
+
+<div class="sec" id="s-coupons">
+  <div class="box"><h4>Nuevo Cupón</h4><div class="r3"><input id="c-code" placeholder="CÓDIGO" style="text-transform:uppercase"><input id="c-val" type="number" min="1" max="100" placeholder="% desc."><input id="c-uses" type="number" min="1" placeholder="Usos"></div><button class="btn full" onclick="addCoupon()">CREAR CUPÓN</button></div>
+  <div class="list" id="clist"></div>
+</div>
+</div>
+</div>
+
+<div class="ov" id="mov"><div class="mbox"><h3>Gestionar Pedido</h3><p id="minfo"></p>
+<select id="mact"><option value="discount">Aplicar descuento %</option><option value="installments">Fraccionar en cuotas</option></select>
+<input id="mval" type="number" min="0" placeholder="Valor (% o número de cuotas)">
+<button class="btn full" onclick="applyManage()">APLICAR</button><button class="btn g full" style="margin-top:8px" onclick="$('mov').classList.remove('open')">Cancelar</button></div></div>
+
+<script>
+const SB_URL='https://pnjdvorshdvzopwklkys.supabase.co';
+const SB_KEY='sb_publishable_yEEm_UX-rpDnR6UC3XOQFg_-S3bSaUM'; // NUNCA pongas aquí el JWT secret ni la service_role
+const BUCKET='products', PS=20, OS=15;
+const LOGO='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Number(n||0).toFixed(2);
+const thumb=u=>u.replace(/\.webp$/,'_t.webp');
+const bad=e=>{e.onerror=null;e.src=e.dataset.f};
+const imgT=u=>u?`<img src="${esc(thumb(u))}" data-f="${esc(u)}" onerror="bad(this)" loading="lazy" decoding="async" alt="">`:'<img alt="">';
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
+
+let sb,prods=[],pPage=0,pDone=false,pq='',orders=[],oPage=0,oDone=false,imgs=[],trash=[],formId=null,mOrder=null,logoImg=new Image(),pend=0;
+logoImg.src='data:image/svg+xml,'+encodeURIComponent(LOGO);
+
+// ═══ AUTH ═══
+async function login(){
+  const b=$('lbtn');b.disabled=true;
+  const {error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
+  b.disabled=false;if(error)toast('Credenciales incorrectas');
+}
+async function logout(){await sb.auth.signOut()}
+let started=false;
+function session(s){
+  $('login').style.display=s?'none':'flex';$('app').style.display=s?'block':'none';
+  if(s&&!started){started=true;boot()}
+  if(!s)started=false;
+}
+
+// ═══ ARRANQUE ═══
+function boot(){
+  stats();loadProducts(true);loadOrders(true);loadCoupons();
+  sb.channel('admin-live')
+   .on('postgres_changes',{event:'*',schema:'public',table:'orders'},({eventType:t,new:n})=>{
+      if(t==='INSERT'){orders.unshift(n);pend++;beep();toast('🛍️ Nuevo pedido '+n.id);renderOrders(n.id)}
+      else if(t==='UPDATE'){const i=orders.findIndex(o=>o.id===n.id);if(i>=0)orders[i]=n;renderOrders()}
+      stats()})
+   .on('postgres_changes',{event:'*',schema:'public',table:'products'},({eventType:t,new:n,old:o})=>{
+      if(t==='DELETE')prods=prods.filter(p=>p.id!==o.id);
+      else{const i=prods.findIndex(p=>p.id===n.id);i>=0?prods[i]=n:t==='INSERT'&&!pq&&prods.unshift(n)}
+      renderProds();stats()})
+   .on('postgres_changes',{event:'*',schema:'public',table:'coupons'},()=>loadCoupons())
+   .subscribe(s=>$('live').classList.toggle('on',s==='SUBSCRIBED'));
+}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator();o.frequency.value=880;o.connect(a.destination);o.start();o.stop(a.currentTime+.18)}catch(e){}}
+let st;async function stats(){
+  clearTimeout(st);st=setTimeout(async()=>{
+    const {data:d}=await sb.rpc('admin_stats');if(!d)return;
+    $('stats').innerHTML=[['Pedidos',d.orders],['Pendientes',d.pending,'w'],['Productos',d.prods],['Stock bajo',d.low,d.low?'w':''],['Cupones',d.coupons],['Ingresos',money(d.rev)]].map(([l,v,c])=>`<div class="sc ${c||''}"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+    pend=d.pending;$('nb').textContent=pend;$('nb').style.display=pend?'flex':'none';
+  },250)}
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));$('s-'+t.dataset.t).classList.add('on')});
+
+// ═══ PEDIDOS ═══
+async function loadOrders(reset){
+  if(reset){orders=[];oPage=0;oDone=false}
+  const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).range(oPage*OS,oPage*OS+OS-1);
+  if(error)return toast('Error cargando pedidos');
+  orders.push(...data);if(data.length<OS)oDone=true;oPage++;renderOrders();
+}
+const SL={pending:'Pendiente',confirmed:'Confirmado',cancelled:'Cancelado'};
+function renderOrders(flash){
+  $('olist').innerHTML=orders.length?orders.map(o=>`<div class="ord ${o.id===flash?'new':''}"><div class="oh"><span class="oid">${esc(o.id)}</span><span class="chip ${o.status}">${SL[o.status]||o.status}</span></div>
+  <div class="ob"><b>${esc(o.client)}</b> · ${esc(o.ci)} · ${esc(o.wa)}<br>${esc(o.addr||'Retiro personal')}${o.notes?'<br>📝 '+esc(o.notes):''}<br>${new Date(o.created_at).toLocaleString('es-VE')}<br>
+  ${(o.items||[]).map(x=>`• ${x.qty}× ${esc(x.name)}${x.size?' ('+esc(x.size)+')':''} — ${money(x.price*x.qty)}`).join('<br>')}
+  ${o.discount?`<br>Descuento: -${o.discount}%`:''}${o.installments?`<br>${o.installments} cuotas de ${money(o.total/o.installments)}`:''}</div>
+  <div class="oh"><span class="ot">${money(o.total)}</span><div class="acts" style="margin:0">
+  ${o.status==='pending'?`<button class="btn ok sm" onclick="setStatus('${o.id}','confirmed')">Confirmar</button>`:''}
+  ${o.status!=='cancelled'?`<button class="btn g sm" onclick="cancelOrder('${o.id}')">Cancelar</button>`:''}
+  <button class="btn g sm" onclick="manage('${o.id}')">Gestionar</button><button class="btn g sm" onclick="remind('${o.id}')">WhatsApp</button></div></div></div>`).join(''):'<div class="empty">Aún no hay pedidos</div>';
+  $('omore').style.display=oDone?'none':'block';
+}
+async function setStatus(id,s){const {error}=await sb.rpc('set_order_status',{p_id:id,p_status:s});toast(error?'Error: '+error.message:'Pedido actualizado ✓')}
+function cancelOrder(id){if(confirm('¿Cancelar pedido? El stock se devolverá al inventario.'))setStatus(id,'cancelled')}
+function manage(id){mOrder=orders.find(o=>o.id===id);$('minfo').textContent=mOrder.id+' · '+mOrder.client;$('mval').value='';$('mov').classList.add('open')}
+async function applyManage(){
+  const v=parseFloat($('mval').value);if(isNaN(v)||v<0)return toast('Valor inválido');
+  const u=$('mact').value==='discount'?{discount:Math.min(100,Math.round(v)),total:+(mOrder.subtotal*(1-Math.min(100,v)/100)).toFixed(2)}:{installments:Math.round(v)};
+  const {error}=await sb.from('orders').update(u).eq('id',mOrder.id);$('mov').classList.remove('open');toast(error?'Error':'Pedido actualizado ✓');
+}
+function remind(id){
+  const o=orders.find(x=>x.id===id),n=o.wa.replace(/\D/g,'');
+  const m=`Hola ${o.client}, te escribimos de *MEN´S* 👑\nTu pedido *${o.id}* por *${money(o.total)}* está ${o.status==='confirmed'?'confirmado':'pendiente de pago'}. ¿Coordinamos? 🙌`;
+  window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');
+}
+
+// ═══ PRODUCTOS / INVENTARIO ═══
+async function loadProducts(reset){
+  if(reset){prods=[];pPage=0;pDone=false}
+  let r=sb.from('products').select('*').order('created_at',{ascending:false}).range(pPage*PS,pPage*PS+PS-1);
+  if(pq)r=r.or(`name.ilike.%${pq}%,brand.ilike.%${pq}%`);
+  const {data,error}=await r;if(error)return toast('Error cargando productos');
+  prods.push(...data);if(data.length<PS)pDone=true;pPage++;renderProds();
+}
+function renderProds(){
+  $('plist').innerHTML=prods.length?prods.map(p=>`<div class="row">${imgT(p.imgs?.[0])}<div class="i"><div class="n">${esc(p.name)}</div><div class="s">${esc(p.cat)} · ${money(p.price)}${p.discount?` (-${p.discount}%)`:''} · Stock ${p.stock}</div>
+  <div class="acts"><button class="btn g sm" onclick="editProd('${p.id}')">Editar</button><button class="btn g sm" onclick="delProd('${p.id}')">Eliminar</button></div></div></div>`).join(''):'<div class="empty">Sin productos</div>';
+  $('ilist').innerHTML=prods.length?prods.map(p=>`<div class="row">${imgT(p.imgs?.[0])}<div class="i"><div class="n">${esc(p.name)}</div>
+  <div class="s ${p.stock<=0?'out':p.stock<=3?'low':''}">${p.stock<=0?'AGOTADO':p.stock<=3?'Stock bajo':'En stock'}</div>
+  <div class="stock"><button onclick="adj('${p.id}',-1)">−</button><input type="number" min="0" value="${p.stock}" onchange="setStock('${p.id}',this.value)"><button onclick="adj('${p.id}',1)">+</button></div></div></div>`).join(''):'<div class="empty">Sin productos</div>';
+  ['pmore','imore'].forEach(i=>$(i).style.display=pDone?'none':'block');
+}
+let sT;[['ps'],['is']].forEach(([i])=>$(i).oninput=e=>{clearTimeout(sT);sT=setTimeout(()=>{pq=e.target.value.replace(/[%,()*]/g,' ').trim();$('ps').value=$('is').value=e.target.value;loadProducts(true)},300)});
+async function setStock(id,v){const s=Math.max(0,parseInt(v)||0);const {error}=await sb.from('products').update({stock:s}).eq('id',id);toast(error?'Error':'Stock actualizado ✓')}
+function adj(id,d){const p=prods.find(x=>x.id===id);setStock(id,p.stock+d)}
+
+// Optimización: WebP + logo en esquina inferior derecha
+async function proc(file){
+  const bmp=await createImageBitmap(file);
+  const mk=(max,q)=>new Promise(res=>{
+    const r=Math.min(1,max/Math.max(bmp.width,bmp.height)),w=Math.round(bmp.width*r),h=Math.round(bmp.height*r);
+    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+    x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,w,h);
+    const s=Math.max(36,Math.min(w,h)*.2),m=Math.min(w,h)*.03;
+    x.shadowColor='rgba(0,0,0,.65)';x.shadowBlur=s*.08;x.globalAlpha=.92;x.drawImage(logoImg,w-s-m,h-s-m,s,s);
+    c.toBlob(res,'image/webp',q)});
+  const out={full:await mk(1400,.82),thumb:await mk(520,.78)};bmp.close?.();return out;
+}
+async function upload(inp){
+  if(!formId)formId=crypto.randomUUID();
+  const fs=[...inp.files];let ok=0;
+  for(let i=0;i<fs.length;i++){
+    $('uprog').textContent=`Optimizando y subiendo ${i+1} de ${fs.length}...`;
+    try{
+      const {full,thumb:t}=await proc(fs[i]),base=`${formId}/${Date.now()}_${i}`,o={contentType:'image/webp',cacheControl:'31536000'};
+      const a=await sb.storage.from(BUCKET).upload(base+'.webp',full,o);if(a.error)throw a.error;
+      await sb.storage.from(BUCKET).upload(base+'_t.webp',t,o);
+      imgs.push(sb.storage.from(BUCKET).getPublicUrl(base+'.webp').data.publicUrl);ok++;
+    }catch(e){toast('Error: '+(e.message||'subida'))}
+  }
+  inp.value='';$('uprog').textContent=ok?`✓ ${ok} imagen(es) optimizadas`:'';renderPrev();
+}
+function renderPrev(){$('prev').innerHTML=imgs.map((u,i)=>`<div>${imgT(u)}${i?'':'<em>Principal</em>'}<button onclick="rmImg(${i})">✕</button></div>`).join('')}
+function rmImg(i){trash.push(...imgs.splice(i,1));renderPrev()}
+const pathOf=u=>decodeURIComponent(u.split(`/${BUCKET}/`)[1]||'');
+const filesOf=us=>us.flatMap(u=>{const p=pathOf(u);return p?[p,p.replace(/\.webp$/,'_t.webp')]:[]});
+
+async function saveProd(){
+  const v=id=>$(id).value.trim(),name=v('p-name');
+  if(!name)return toast('Ingresa el nombre');
+  if(!imgs.length)return toast('Sube al menos una imagen');
+  const row={id:formId||crypto.randomUUID(),name,brand:v('p-brand'),price:parseFloat(v('p-price'))||0,old_price:parseFloat(v('p-old'))||0,cat:v('p-cat'),imgs,badge:v('p-badge'),badge_type:v('p-bt'),
+    sizes:v('p-sizes').split(',').map(s=>s.trim()).filter(Boolean),descr:v('p-desc'),stock:Math.max(0,parseInt(v('p-stock'))||0),discount:Math.min(100,Math.max(0,parseInt(v('p-disc'))||0)),installments:parseInt(v('p-inst'))||0,inst_price:parseFloat(v('p-ip'))||0};
+  $('sbtn').disabled=true;
+  const {error}=await sb.from('products').upsert(row);$('sbtn').disabled=false;
+  if(error)return toast('Error: '+error.message);
+  if(trash.length)sb.storage.from(BUCKET).remove(filesOf(trash));
+  toast('Producto guardado ✓ (ya visible en la tienda)');clearForm();
+}
+function editProd(id){
+  const p=prods.find(x=>x.id===id);formId=p.id;imgs=[...(p.imgs||[])];trash=[];
+  const s=(i,v)=>$(i).value=v??'';
+  s('p-name',p.name);s('p-brand',p.brand);s('p-price',p.price);s('p-old',p.old_price);s('p-cat',p.cat);s('p-badge',p.badge);s('p-bt',p.badge_type||'sale');
+  s('p-sizes',(p.sizes||[]).join(','));s('p-desc',p.descr);s('p-stock',p.stock);s('p-disc',p.discount);s('p-inst',p.installments);s('p-ip',p.inst_price);
+  renderPrev();$('ftitle').textContent='Editar Producto';scrollTo({top:0,behavior:'smooth'});
+}
+function clearForm(){formId=null;imgs=[];trash=[];['p-name','p-brand','p-price','p-old','p-badge','p-sizes','p-desc'].forEach(i=>$(i).value='');
+  ['p-stock','p-disc','p-inst','p-ip'].forEach(i=>$(i).value=0);$('p-bt').value='sale';$('p-cat').value='ropa';$('ftitle').textContent='Agregar Producto';$('uprog').textContent='';renderPrev()}
+async function delProd(id){
+  const p=prods.find(x=>x.id===id);if(!confirm(`¿Eliminar "${p.name}"?`))return;
+  const {error}=await sb.from('products').delete().eq('id',id);
+  if(error)return toast('Error: '+error.message);
+  sb.storage.from(BUCKET).remove(filesOf(p.imgs||[]));toast('Producto eliminado');
+}
+
+// ═══ CUPONES ═══
+async function loadCoupons(){
+  const {data}=await sb.from('coupons').select('*').order('code');
+  $('clist').innerHTML=(data||[]).length?data.map(c=>`<div class="row"><div class="i"><div class="n">${esc(c.code)} · -${c.value}%</div><div class="s">${c.used} / ${c.uses} usos</div></div><button class="btn g sm" onclick="delCoupon('${esc(c.code)}')">Eliminar</button></div>`).join(''):'<div class="empty">Sin cupones</div>';
+}
+async function addCoupon(){
+  const code=$('c-code').value.trim().toUpperCase(),value=parseInt($('c-val').value),uses=parseInt($('c-uses').value);
+  if(!code||!(value>0&&value<=100)||!(uses>0))return toast('Completa código, % y usos');
+  const {error}=await sb.from('coupons').upsert({code,value,uses,used:0});
+  if(!error)['c-code','c-val','c-uses'].forEach(i=>$(i).value='');toast(error?'Error: '+error.message:'Cupón creado ✓');
+}
+async function delCoupon(c){if(confirm('¿Eliminar cupón '+c+'?'))await sb.from('coupons').delete().eq('code',c)}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  sb=supabase.createClient(SB_URL,SB_KEY);
+  sb.auth.getSession().then(({data})=>session(data.session));
+  sb.auth.onAuthStateChange((_e,s)=>session(s));
+});
+</script>
+</body>
+</html>
