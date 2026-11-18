@@ -52,13 +52,13 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
 .drop{border:2px dashed #2a2a2a;border-radius:12px;padding:18px;text-align:center;color:#666;font-size:12px;cursor:pointer;margin-bottom:10px;position:relative}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;height:100%}
 .prev{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.prev div{position:relative;width:72px;height:90px}
+.prev div{position:relative;width:80px;height:80px}
 .prev img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a}
 .prev button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:11px;cursor:pointer}
 .prev em{position:absolute;bottom:3px;left:3px;font-size:8px;background:#000a;padding:1px 5px;border-radius:4px;font-style:normal}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .row{background:#131313;border:1px solid #1c1c1c;border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center}
-.row img{width:56px;height:70px;object-fit:cover;border-radius:8px;background:#0a0a0a;flex-shrink:0}
+.row img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#0a0a0a;flex-shrink:0}
 .row .i{flex:1;min-width:0}
 .row .n{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row .s{font-size:11px;color:#777;margin-top:3px}
@@ -119,6 +119,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
     <div class="r2"><div><label class="lb">Precio $</label><input id="p-price" type="number" step="0.01" min="0"></div><div><label class="lb">Precio anterior $</label><input id="p-old" type="number" step="0.01" min="0"></div></div>
     <input id="p-cat" list="catlist" placeholder="Categoría (ej: ropa, relojes, gorras)" maxlength="30"><datalist id="catlist"></datalist>
     <label class="lb">Imágenes (se optimizan a WebP · el logo translúcido se graba solo en la foto grande; la miniatura va limpia)</label>
+    <select id="fit"><option value="cover">Recortar al centro (foto cuadrada)</option><option value="contain">Foto completa con fondo desenfocado (cuadrada)</option></select>
     <div class="drop">Toca para subir imágenes<input type="file" id="files" accept="image/*" multiple onchange="upload(this)"></div>
     <div class="prev" id="prev"></div><div id="uprog" style="font-size:12px;color:#888;margin-bottom:8px"></div>
     <div class="r2"><input id="p-badge" placeholder="Etiqueta: NEW / HOT / -30%"><select id="p-bt"><option value="sale">Oferta (rojo)</option><option value="new">Nuevo (verde)</option><option value="hot">Hot (naranja)</option></select></div>
@@ -279,15 +280,19 @@ function adj(id,d){const p=prods.find(x=>x.id===id);setStock(id,p.stock+d)}
 
 // Optimización: WebP + logo en esquina inferior derecha
 async function proc(file){
-  const bmp=await createImageBitmap(file);
+  const bmp=await createImageBitmap(file),fit=$('fit').value,bw=bmp.width,bh=bmp.height,mn=Math.min(bw,bh);
   const mk=(max,q,wm)=>new Promise(res=>{
-    const r=Math.min(1,max/Math.max(bmp.width,bmp.height)),w=Math.round(bmp.width*r),h=Math.round(bmp.height*r);
-    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
-    x.imageSmoothingQuality='high';x.drawImage(bmp,0,0,w,h);
-    if(wm){const s=Math.max(36,Math.min(w,h)*.2),m=Math.min(w,h)*.03;
-    x.shadowColor='rgba(0,0,0,.5)';x.shadowBlur=s*.06;x.globalAlpha=.38;x.drawImage(logoImg,w-s-m,h-s-m,s,s)}
+    const side=Math.round(Math.min(max,fit==='cover'?mn:Math.max(bw,bh)));
+    const c=document.createElement('canvas');c.width=c.height=side;const x=c.getContext('2d');x.imageSmoothingQuality='high';
+    if(fit==='cover')x.drawImage(bmp,(bw-mn)/2,(bh-mn)/2,mn,mn,0,0,side,side);
+    else{
+      x.fillStyle='#111';x.fillRect(0,0,side,side);
+      if('filter' in x){x.filter='blur(22px)';x.drawImage(bmp,(bw-mn)/2,(bh-mn)/2,mn,mn,-30,-30,side+60,side+60);x.filter='none';x.fillStyle='rgba(0,0,0,.35)';x.fillRect(0,0,side,side)}
+      const r=side/Math.max(bw,bh),w=bw*r,h=bh*r;x.drawImage(bmp,(side-w)/2,(side-h)/2,w,h);
+    }
+    if(wm){const s=side*.2,m=side*.03;x.shadowColor='rgba(0,0,0,.4)';x.shadowBlur=s*.06;x.globalAlpha=.22;x.drawImage(logoImg,side-s-m,side-s-m,s,s)}
     c.toBlob(res,'image/webp',q)});
-  const out={full:await mk(1400,.82,true),thumb:await mk(520,.78,false)};bmp.close?.();return out;
+  const out={full:await mk(1200,.82,true),thumb:await mk(480,.78,false)};bmp.close?.();return out;
 }
 async function upload(inp){
   if(!formId)formId=crypto.randomUUID();
