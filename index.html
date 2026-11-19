@@ -200,28 +200,41 @@ footer a{color:#888;text-decoration:none}
 .fs .glassBox{flex:0 0 clamp(210px,62vw,270px);width:auto;scroll-snap-align:start}
 @media(hover:hover){.glassBox:hover .glassBox__imgBox{transform:translateY(-30px)}.glassBox:hover .glassBox__imgBox img{transform:translate(-8px,-12px) rotate(-8deg) scale(1.12)}.glassBox:hover .glassBox__more{opacity:1}}
 @media(hover:none){.glassBox__more{opacity:1}}
-/* Marco eléctrico animado (destacados) */
-.glassBox.hot{--eb:#dd8448;--eb2:rgba(221,132,72,.6)}
-.eb{position:absolute;inset:-2px;border-radius:16px;pointer-events:none}
-.eb>*{position:absolute;inset:0;border-radius:16px;border:2px solid var(--eb)}
-.eb .eb-g1{border-color:var(--eb2);filter:blur(1px)}
-.eb .eb-g2{filter:blur(4px)}
-.eb-bg{position:absolute;inset:0;border-radius:16px;filter:blur(26px);transform:scale(1.08);opacity:.32;z-index:-1;background:linear-gradient(-30deg,var(--eb),transparent,var(--eb))}
-.glassBox.hot.vis .eb-main{filter:url(#turbulent-displace)}
-@media(prefers-reduced-motion:reduce){.glassBox.hot.vis .eb-main{filter:none}}
-@media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.ov{align-items:center}.pn{border-radius:24px;max-width:480px}}
+/* Destacados: la tarjeta se ilumina como los botones neón */
+.glassBox{isolation:isolate}
+.glassBox.hot{--nc:#ff2438;border-color:rgba(255,36,56,.45);box-shadow:0 0 22px rgba(255,36,56,.22),0 20px 30px rgba(0,0,0,.25)}
+.glassBox.hot::before,.glassBox.hot::after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:44%;height:8px;border-radius:10px;background:var(--nc);box-shadow:0 0 5px var(--nc),0 0 15px var(--nc),0 0 30px var(--nc);transition:.5s .2s;z-index:-1;pointer-events:none}
+.glassBox.hot::before{bottom:-5px}.glassBox.hot::after{top:-5px}
+.glassBox.hot:hover::before,.glassBox.hot:active::before{bottom:0;height:50%;width:80%;border-radius:30px}
+.glassBox.hot:hover::after,.glassBox.hot:active::after{top:0;height:50%;width:80%;border-radius:30px}
+.glassBox.hot .glassBox__content b{color:#fff}
+/* Ficha de producto: fija, sin scroll vertical ni horizontal */
+html.lock,html.lock body{overflow:hidden}html.lock body{position:fixed;left:0;right:0;width:100%}
+#pov{touch-action:none;overscroll-behavior:contain}
+#pov .pn{height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;max-width:none;border-radius:0;border:0;overflow:hidden}
+#pov .x{top:calc(12px + env(safe-area-inset-top,0px))}
+#pov .sl{flex:0 1 100vw;min-height:130px;width:100%;aspect-ratio:auto}
+#pov .mb{flex:0 0 auto;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+#pov .mbr{font-size:10px;margin-bottom:2px}
+#pov .mn{font-size:26px;margin-bottom:6px}
+#pov .md{font-size:12px;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#pov .mp{margin-bottom:8px;gap:10px}#pov .mpr{font-size:24px}
+#pov .stk{margin-bottom:6px}#pov .lbl{margin-bottom:6px}
+#pov .sizes{gap:8px;margin-bottom:10px}#pov .so{height:36px}
+#pov .qr{margin-bottom:10px;padding:8px 14px}
+#pov .inst{margin-bottom:10px;padding:7px 12px;font-size:11px}
+#pov .pbtn{padding:13px;font-size:20px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.ov{align-items:center}.pn{border-radius:24px;max-width:480px}
+#pov .pn{height:auto;max-width:480px;max-height:94vh;max-height:94dvh;border-radius:24px;border:1px solid #222}#pov .sl{flex-basis:480px}}
 @media(min-width:1024px){.grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}.logo b{font-size:30px}.logo svg{width:44px;height:44px}.hbtn{width:42px;height:42px}.nm{font-size:14px}.pr{font-size:17px}
-#pov .pn{max-width:940px;flex-direction:row;overflow:hidden;max-height:88vh}#pov .sl{width:50%;height:auto;align-self:flex-start}#pov .mb{width:50%;overflow-y:auto;padding:32px}}
+#pov .pn{max-width:940px;flex-direction:row}#pov .sl{flex:0 0 50%;width:50%;height:auto;aspect-ratio:1/1;align-self:flex-start;min-height:0}
+#pov .mb{flex:1;min-width:0;overflow-y:auto;padding:28px}#pov .md{-webkit-line-clamp:6;font-size:13px}#pov .mn{font-size:32px}}
+@media(max-height:560px) and (orientation:landscape){#pov .pn{flex-direction:row;height:100vh;height:100dvh;max-height:100dvh;max-width:none;border-radius:0;border:0}
+#pov .sl{flex:0 0 auto;height:100%;width:auto;aspect-ratio:1/1;min-height:0}#pov .mb{flex:1;min-width:0;overflow-y:auto}}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute"><symbol id="lg" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></symbol><defs><filter id="turbulent-displace" color-interpolation-filters="sRGB" x="-20%" y="-20%" width="140%" height="140%">
-<feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise1" seed="1"/><feOffset in="noise1" dx="0" dy="0" result="offsetNoise1"><animate attributeName="dy" values="700; 0" dur="6s" repeatCount="indefinite" calcMode="linear"/></feOffset>
-<feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise2" seed="1"/><feOffset in="noise2" dx="0" dy="0" result="offsetNoise2"><animate attributeName="dy" values="0; -700" dur="6s" repeatCount="indefinite" calcMode="linear"/></feOffset>
-<feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise1" seed="2"/><feOffset in="noise1" dx="0" dy="0" result="offsetNoise3"><animate attributeName="dx" values="490; 0" dur="6s" repeatCount="indefinite" calcMode="linear"/></feOffset>
-<feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise2" seed="2"/><feOffset in="noise2" dx="0" dy="0" result="offsetNoise4"><animate attributeName="dx" values="0; -490" dur="6s" repeatCount="indefinite" calcMode="linear"/></feOffset>
-<feComposite in="offsetNoise1" in2="offsetNoise2" result="part1"/><feComposite in="offsetNoise3" in2="offsetNoise4" result="part2"/><feBlend in="part1" in2="part2" mode="color-dodge" result="combinedNoise"/>
-<feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="14" xChannelSelector="R" yChannelSelector="B"/></filter></defs></svg>
+<svg width="0" height="0" style="position:absolute"><symbol id="lg" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></symbol></svg>
 <div id="load"><svg><use href="#lg"/></svg><div class="lt">MEN´S</div><div class="ls">Moda Urbana</div><div class="lb"><i></i></div></div>
 <div id="bg"><img src="https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=700&q=50&fm=webp" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'"></div>
 <div class="app">
@@ -328,20 +341,17 @@ async function load(reset){
   $('load').classList.add('hide');
 }
 const cardH=p=>{const out=p.stock<=0,bt=p.badge_type||'sale';
-  return `<div class="glassBox ${out?'out':''} ${p.featured?'hot':''}" onclick="openP('${p.id}')">${p.featured?'<div class="eb-bg"></div><div class="eb"><div class="eb-g2"></div><div class="eb-g1"></div><div class="eb-main"></div></div>':''}
+  return `<div class="glassBox ${out?'out':''} ${p.featured?'hot':''}" onclick="openP('${p.id}')">
   <div class="glassBox__imgBox">${imgT(im(p))}${p.badge?`<span class="bd ${esc(bt)}">${esc(p.badge)}</span>`:''}<button class="gadd" ${out?'disabled':''} onclick="event.stopPropagation();quick('${p.id}')" aria-label="Añadir"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button><h3 class="glassBox__title">${esc(p.name)}</h3></div>
   <div class="glassBox__content"><b>${money(disp(p))}${p.old_price>0?`<s>${money(p.old_price)}</s>`:''}</b><span class="glassBox__more">${out?'AGOTADO':'Ver producto →'}</span></div></div>`};
-// El marco animado solo se activa en tarjetas visibles (ahorra batería y CPU)
-const hio=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('vis',e.isIntersecting)),{rootMargin:'80px'});
-function watch(){hio.disconnect();document.querySelectorAll('.glassBox.hot').forEach(el=>hio.observe(el))}
 function render(){
   $('grid').innerHTML=products.length?products.map(cardH).join(''):'<div class="empty">No hay productos disponibles</div>';
   $('more').style.display=done?'none':'block';
-  io.unobserve($('more'));io.observe($('more'));watch();
+  io.unobserve($('more'));io.observe($('more'));
 }
 // Categorías (solo las que tienen artículos) y destacados
 function renderCats(){$('cats').innerHTML=['all',...cats].map(k=>{const on=k===cat,b=`<button class="cb ${on?'on':''}" data-k="${esc(k)}">${k==='all'?'Todo':esc(lab(k))}</button>`;return on?`<div class="gb">${b}</div>`:b}).join('')}
-function renderFeat(){$('fw').classList.toggle('on',featured.length>0);$('fs').innerHTML=featured.map(cardH).join('');watch()}
+function renderFeat(){$('fw').classList.toggle('on',featured.length>0);$('fs').innerHTML=featured.map(cardH).join('')}
 let mt;function meta(){clearTimeout(mt);mt=setTimeout(async()=>{
   const [c,f]=await Promise.all([sb.rpc('get_categories'),sb.from('products').select('*').eq('featured',true).order('created_at',{ascending:false}).limit(12)]);
   cats=c.data||[];featured=f.data||[];
@@ -483,6 +493,10 @@ $('fs').addEventListener('touchstart',()=>{const e=$('fs');e._p=1;clearTimeout(e
   },true);
   document.addEventListener('keyup',e=>{if(e.key==='PrintScreen')clr()});
 })();
+// Bloquea el scroll de la página mientras hay una ventana abierta
+let ly=0;function syncLock(){const o=!!document.querySelector('.ov.open'),h=document.documentElement;
+  if(o&&!h.classList.contains('lock')){ly=scrollY;h.classList.add('lock');document.body.style.top=-ly+'px'}
+  else if(!o&&h.classList.contains('lock')){h.classList.remove('lock');document.body.style.top='';scrollTo(0,ly)}}
 // ═══ INIT ═══
 setInterval(()=>{const n=document.querySelectorAll('.bsl').length;if(n<2||document.hidden)return;bi=(bi+1)%n;$('bs').style.transform=`translateX(-${bi*100}%)`;document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===bi))},4500);
 document.addEventListener('contextmenu',e=>{if(e.target.tagName==='IMG')e.preventDefault()});
@@ -493,6 +507,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   let t;$('q').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{q=e.target.value.replace(/[%,()*]/g,' ').trim();load(true)},300)};
   $('more').onclick=()=>load();
   [ 'pov','cov','kov'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target.id===id)$(id).classList.remove('open')}));
+  ['pov','cov','kov'].forEach(id=>new MutationObserver(syncLock).observe($(id),{attributes:true,attributeFilter:['class']}));
   badge();
   sb=supabase.createClient(SB_URL,SB_KEY);
   renderCats();load(true);meta();loadBanners();live();
