@@ -33,7 +33,7 @@ button,input,select,textarea{font-family:inherit}
 .lb{width:160px;height:2px;background:#1c1c1c;border-radius:2px;overflow:hidden;margin-top:8px}
 .lb i{display:block;height:100%;width:40%;background:var(--red);animation:lb 1s infinite ease-in-out}
 @keyframes lb{0%{margin-left:-40%}100%{margin-left:100%}}
-header{position:sticky;top:0;z-index:100;background:rgba(7,7,7,.97);border-bottom:1px solid #1c1c1c;padding:10px var(--px);padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px)}
+header{flex-wrap:wrap;position:sticky;top:0;z-index:100;background:rgba(7,7,7,.97);border-bottom:1px solid #1c1c1c;padding:10px var(--px);padding-top:calc(10px + env(safe-area-inset-top,0px));display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px)}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .logo svg{width:38px;height:38px}
 .logo b{display:block;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;font-weight:400;line-height:.95}
@@ -208,6 +208,8 @@ footer a{color:#888;text-decoration:none}
 .fs .glassBox.hot:hover::before,.fs .glassBox.hot:active::before{bottom:0;height:50%;width:80%;border-radius:30px}
 .fs .glassBox.hot:hover::after,.fs .glassBox.hot:active::after{top:0;height:50%;width:80%;border-radius:30px}
 .fs .glassBox.hot .glassBox__content b{color:#fff}
+header .sb{flex:0 0 100%;order:3;padding:10px 0 2px}
+.searching .banner,.searching .fw{display:none}
 /* Ficha de producto: fija, sin scroll vertical ni horizontal */
 html.lock,html.lock body{overflow:hidden}html.lock body{position:fixed;left:0;right:0;width:100%}
 #pov{touch-action:none;overscroll-behavior:contain}
@@ -245,12 +247,12 @@ html.lock,html.lock body{overflow:hidden}html.lock body{position:fixed;left:0;ri
     <div class="hbtn" onclick="go('store');toggleSearch()" aria-label="Buscar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg></div>
     <div class="hbtn" onclick="openCart()" aria-label="Bolsa"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="cbadge" id="badge">0</span></div>
   </div>
+  <div class="sb" id="sbar"><div class="si"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg><input id="q" type="search" placeholder="Buscar ropa, perfumes, accesorios..." autocomplete="off"><button type="button" class="sx" onclick="toggleSearch()" aria-label="Cerrar búsqueda">✕</button></div></div>
 </header>
 
 <div class="page on" id="p-store">
   <div class="banner"><div class="bs" id="bs"></div><div class="dots" id="dots"></div></div>
   <div class="fw" id="fw"><div class="st">Destacados</div><div class="fs" id="fs"></div></div>
-  <div class="sb" id="sbar"><div class="si"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg><input id="q" type="search" placeholder="Buscar ropa, perfumes, accesorios..." autocomplete="off"><button type="button" class="sx" onclick="toggleSearch()" aria-label="Cerrar búsqueda">✕</button></div></div>
   <div class="cats" id="cats"></div>
   <div class="st" id="stt">Catálogo</div>
   <div class="grid" id="grid"></div>
@@ -358,7 +360,8 @@ let mt;function meta(){clearTimeout(mt);mt=setTimeout(async()=>{
   if(cat!=='all'&&!cats.includes(cat)){cat='all';$('stt').textContent='Catálogo';load(true)}
   renderCats();renderFeat();
 },300)}
-function toggleSearch(){const o=$('sbar').classList.toggle('open');if(o)$('q').focus();else if(q||$('q').value){$('q').value='';q='';load(true)}}
+function toggleSearch(){const o=$('sbar').classList.toggle('open');$('p-store').classList.toggle('searching',o);
+  if(o){scrollTo({top:0});$('q').focus()}else if(q||$('q').value){$('q').value='';q='';load(true)}}
 const io=new IntersectionObserver(e=>{if(e[0].isIntersecting)load()},{rootMargin:'500px'});
 
 // Tiempo real: cambios de productos e inventario
