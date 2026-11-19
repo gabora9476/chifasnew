@@ -100,12 +100,15 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
   <input id="em" type="email" placeholder="Correo" autocomplete="username">
   <input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
   <button class="btn full" id="lbtn" onclick="login()">INGRESAR</button>
+  <div id="lmsg" style="font-size:12px;color:#FF8C00;min-height:16px;margin-top:8px;line-height:1.5"></div>
+  <div style="display:flex;gap:16px;justify-content:center;font-size:12px"><a href="#" onclick="signup();return false" style="color:#aaa">Crear cuenta</a><a href="#" onclick="forgot();return false" style="color:#aaa">Olvidé mi contraseña</a></div>
+  <p style="margin-top:14px;font-size:11px;line-height:1.6">¿Eres colaborador? Pide al dueño que agregue tu correo y luego toca «Crear cuenta» con ese mismo correo.</p>
 </div>
 
 <div id="app" style="display:none">
 <header><div class="hin"><svg class="lg" viewBox="0 0 100 100"><path d="M22 36 28 12 41 25 50 8 59 25 72 12 78 36Z" fill="#f5c518"/><rect x="22" y="39" width="56" height="5" rx="2" fill="#f5c518"/><path d="M18 92V50h12l20 22 20-22h12v42H70V68L53 88h-6L30 68v24Z" fill="#fff"/></svg>
-<b>MEN´S<small>ADMINISTRACIÓN</small></b><span style="font-size:11px;color:#777"><i class="live" id="live"></i>En vivo</span><button class="btn g sm" onclick="logout()">Salir</button></div>
-<div class="tabs"><div class="tab on" data-t="stats">Resumen</div><div class="tab" data-t="orders">Pedidos<i id="nb">0</i></div><div class="tab" data-t="products">Productos</div><div class="tab" data-t="inv">Inventario</div><div class="tab" data-t="banners">Banner</div><div class="tab" data-t="coupons">Cupones</div></div></header>
+<b>MEN´S<small id="who">ADMINISTRACIÓN</small></b><span style="font-size:11px;color:#777"><i class="live" id="live"></i>En vivo</span><button class="btn g sm" onclick="logout()">Salir</button></div>
+<div class="tabs"><div class="tab on" data-t="stats">Resumen</div><div class="tab" data-t="orders">Pedidos<i id="nb">0</i></div><div class="tab" data-t="products">Productos</div><div class="tab" data-t="inv">Inventario</div><div class="tab" data-t="banners" data-o="1">Banner</div><div class="tab" data-t="coupons" data-o="1">Cupones</div><div class="tab" data-t="team" data-o="1">Equipo</div></div></header>
 
 <div class="wrap">
 <div class="sec on" id="s-stats"><div class="stats" id="stats"></div></div>
@@ -155,6 +158,17 @@ header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.97);border-bottom
   </div>
   <div class="list" id="blist"></div>
 </div>
+
+<div class="sec" id="s-team">
+  <div class="box"><h4>Agregar al Equipo</h4>
+    <p style="font-size:12px;color:#888;margin-bottom:12px;line-height:1.6">Escribe el correo de la persona. Después debe abrir este panel, tocar «Crear cuenta» con ese mismo correo y confirmarlo desde su email.</p>
+    <input id="t-email" type="email" placeholder="correo@ejemplo.com" autocapitalize="none">
+    <input id="t-name" placeholder="Nombre (opcional)" maxlength="60">
+    <select id="t-role"><option value="staff">Colaborador · productos, inventario y pedidos</option><option value="owner">Dueño · acceso total</option></select>
+    <div style="display:flex;gap:10px"><button class="btn full" onclick="addStaff()">AGREGAR</button><button class="btn g" onclick="copyLink()">Copiar enlace</button></div>
+  </div>
+  <div class="list" id="tlist"></div>
+</div>
 </div>
 </div>
 
@@ -176,26 +190,46 @@ const bad=e=>{e.onerror=null;e.src=e.dataset.f};
 const imgT=u=>u?`<img src="${esc(thumb(u))}" data-f="${esc(u)}" onerror="bad(this)" loading="lazy" decoding="async" alt="">`:'<img alt="">';
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
 
-let sb,prods=[],pPage=0,pDone=false,pq='',pfeat=false,orders=[],oPage=0,oDone=false,imgs=[],trash=[],formId=null,mOrder=null,logoImg=new Image(),pend=0;
+let sb,role='',me='',uid='',prods=[],pPage=0,pDone=false,pq='',pfeat=false,orders=[],oPage=0,oDone=false,imgs=[],trash=[],formId=null,mOrder=null,logoImg=new Image(),pend=0;
 logoImg.src='data:image/svg+xml,'+encodeURIComponent(LOGO);
 
 // ═══ AUTH ═══
 async function login(){
   const b=$('lbtn');b.disabled=true;
   const {error}=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
-  b.disabled=false;if(error)toast('Credenciales incorrectas');
+  b.disabled=false;if(error)msg(/confirm/i.test(error.message)?'Confirma tu correo primero (revisa tu bandeja).':'Correo o contraseña incorrectos.');else msg('');
 }
 async function logout(){await sb.auth.signOut()}
+const msg=t=>{$('lmsg').textContent=t};
+async function signup(){
+  const email=$('em').value.trim(),password=$('pw').value;
+  if(!email||password.length<8)return msg('Escribe tu correo y una contraseña de mínimo 8 caracteres.');
+  const {error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.href.split('#')[0]}});
+  msg(error?error.message:'Listo. Revisa tu correo, confirma tu cuenta y luego inicia sesión aquí.');
+}
+async function forgot(){
+  const email=$('em').value.trim();if(!email)return msg('Escribe tu correo arriba.');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
+  msg(error?error.message:'Te enviamos un enlace para cambiar tu contraseña.');
+}
 let started=false;
-function session(s){
-  $('login').style.display=s?'none':'flex';$('app').style.display=s?'block':'none';
-  if(s&&!started){started=true;boot()}
-  if(!s)started=false;
+async function session(s){
+  if(!s){started=false;uid='';role='';$('login').style.display='flex';$('app').style.display='none';return}
+  if(started&&s.user.id===uid)return;
+  const {data:r,error}=await sb.rpc('my_role');
+  if(error){msg('Falta ejecutar el SQL del equipo en Supabase.');await sb.auth.signOut();return}
+  if(!r){msg('Tu correo no tiene acceso. Pide al dueño que te agregue al equipo.');await sb.auth.signOut();return}
+  uid=s.user.id;me=(s.user.email||'').toLowerCase();role=r;
+  document.querySelectorAll('[data-o]').forEach(e=>e.style.display=r==='owner'?'':'none');
+  $('who').textContent=r==='owner'?'DUEÑO':'COLABORADOR';
+  $('login').style.display='none';$('app').style.display='block';
+  if(!started){started=true;boot()}
 }
 
 // ═══ ARRANQUE ═══
 function boot(){
-  stats();loadProducts(true);loadOrders(true);loadCoupons();loadBanners();
+  stats();loadProducts(true);loadOrders(true);
+  if(role==='owner'){loadCoupons();loadBanners();loadTeam()}
   sb.channel('admin-live')
    .on('postgres_changes',{event:'*',schema:'public',table:'orders'},({eventType:t,new:n})=>{
       if(t==='INSERT'){orders.unshift(n);pend++;beep();toast('🛍️ Nuevo pedido '+n.id);renderOrders(n.id)}
@@ -344,6 +378,7 @@ async function delProd(id){
 
 // ═══ CUPONES ═══
 async function loadCoupons(){
+  if(role!=='owner')return;
   const {data}=await sb.from('coupons').select('*').order('code');
   $('clist').innerHTML=(data||[]).length?data.map(c=>`<div class="row"><div class="i"><div class="n">${esc(c.code)} · -${c.value}%</div><div class="s">${c.used} / ${c.uses} usos</div></div><button class="btn g sm" onclick="delCoupon('${esc(c.code)}')">Eliminar</button></div>`).join(''):'<div class="empty">Sin cupones</div>';
 }
@@ -355,10 +390,30 @@ async function addCoupon(){
 }
 async function delCoupon(c){if(confirm('¿Eliminar cupón '+c+'?'))await sb.from('coupons').delete().eq('code',c)}
 
+// ═══ EQUIPO (solo dueño) ═══
+async function loadTeam(){
+  if(role!=='owner')return;
+  const {data,error}=await sb.rpc('staff_list');if(error)return toast('Error: '+error.message);
+  $('tlist').innerHTML=(data||[]).map(t=>`<div class="row"><div class="i"><div class="n">${esc(t.name||t.email)}</div>
+  <div class="s">${esc(t.email)}<br>${t.role==='owner'?'Dueño':'Colaborador'} · ${t.registered?'✓ Cuenta activa':'⏳ Pendiente de registro'}</div>
+  <div class="acts">${t.email===me?'<span class="s">(tú)</span>':`<button class="btn g sm" onclick="setRole('${esc(t.email)}','${t.role==='owner'?'staff':'owner'}')">${t.role==='owner'?'Pasar a colaborador':'Hacer dueño'}</button><button class="btn g sm" onclick="delStaff('${esc(t.email)}')">Quitar acceso</button>`}</div></div></div>`).join('')||'<div class="empty">Sin miembros</div>';
+}
+async function addStaff(){
+  const email=$('t-email').value.trim().toLowerCase();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return toast('Correo inválido');
+  const {error}=await sb.from('staff').upsert({email,name:$('t-name').value.trim(),role:$('t-role').value});
+  if(error)return toast('Error: '+error.message);
+  $('t-email').value=$('t-name').value='';toast('Agregado ✓ Avísale que cree su cuenta');loadTeam();
+}
+async function setRole(email,r){const {error}=await sb.from('staff').update({role:r}).eq('email',email);toast(error?'Error: '+error.message:'Rol actualizado ✓');loadTeam()}
+async function delStaff(email){if(!confirm('¿Quitar el acceso a '+email+'?'))return;const {error}=await sb.from('staff').delete().eq('email',email);toast(error?'Error: '+error.message:'Acceso eliminado');loadTeam()}
+function copyLink(){navigator.clipboard?.writeText(location.href.split('#')[0]).then(()=>toast('Enlace copiado ✓'),()=>toast(location.href.split('#')[0]))}
+
 // ═══ BANNER ═══
 let bns=[],bnId=null,bnUrl='',bnTrash=[];
 const bimg=u=>u?`<img src="${esc(u)}" loading="lazy" decoding="async" alt="">`:'<img alt="">';
 async function loadBanners(){
+  if(role!=='owner')return;
   const {data,error}=await sb.from('banners').select('*').order('pos').order('created_at');
   if(error)return toast('Falta crear la tabla banners (ver SQL)');
   bns=data||[];
@@ -401,7 +456,9 @@ async function delBn(id){const b=bns.find(x=>x.id===id);if(!confirm('¿Eliminar 
 document.addEventListener('DOMContentLoaded',()=>{
   sb=supabase.createClient(SB_URL,SB_KEY);
   sb.auth.getSession().then(({data})=>session(data.session));
-  sb.auth.onAuthStateChange((_e,s)=>session(s));
+  sb.auth.onAuthStateChange((e,s)=>setTimeout(async()=>{
+    if(e==='PASSWORD_RECOVERY'){const p=prompt('Escribe tu nueva contraseña (mínimo 8 caracteres):');if(p&&p.length>=8){const {error}=await sb.auth.updateUser({password:p});toast(error?error.message:'Contraseña actualizada ✓')}}
+    session(s)},0));
 });
 </script>
 </body>
